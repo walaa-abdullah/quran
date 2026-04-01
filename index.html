@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>القرآن الكريم</title>
+    <!-- Beautiful Arabic Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a5f; /* Dark Blue/Navy */
+            --bg: #f8f9fa; /* Eye-friendly background */
+            --paper: #ffffff; /* Paper color */
+            --text: #2d3436; /* Text color */
+            --accent: #d35400; /* Ayah numbers color */
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 20px 10px;
+            font-size: 30px;
+            font-weight: 700;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .controls {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        select {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            font-size: 18px;
+            font-family: 'Cairo', sans-serif;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            background-color: white;
+            cursor: pointer;
+            outline: none;
+        }
+        select:focus {
+            box-shadow: 0 0 8px rgba(30, 58, 95, 0.5);
+        }
+        #quran-container {
+            background: var(--paper);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            min-height: 400px;
+        }
+        .surah-title {
+            text-align: center;
+            font-family: 'Amiri Quran', serif;
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        .bismillah {
+            text-align: center;
+            font-family: 'Amiri Quran', serif;
+            font-size: 30px;
+            color: var(--text);
+            margin-bottom: 30px;
+        }
+        .quran-text {
+            font-family: 'Amiri Quran', serif;
+            font-size: 34px;
+            line-height: 2.5;
+            text-align: justify;
+            text-align-last: center;
+        }
+        .ayah-number {
+            color: var(--accent);
+            font-size: 26px;
+            margin: 0 8px;
+        }
+        .loading {
+            text-align: center;
+            color: #636e72;
+            font-size: 22px;
+            margin-top: 50px;
+        }
+        /* Mobile Screen Adjustments */
+        @media (max-width: 600px) {
+            .quran-text {
+                font-size: 26px;
+                line-height: 2.2;
+            }
+            #quran-container {
+                padding: 20px;
+            }
+            .surah-title {
+                font-size: 32px;
+            }
+            .bismillah {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        القرآن الكريم
+    </header>
+
+    <div class="container">
+        <div class="controls">
+            <select id="surah-select">
+                <option value="">اختر السورة لبدء القراءة...</option>
+            </select>
+        </div>
+
+        <div id="quran-container">
+            <div class="loading">الرجاء اختيار السورة من القائمة أعلاه ☝️</div>
+        </div>
+    </div>
+
+    <script>
+        // Convert numbers to Arabic numerals
+        function toArabicNumbers(num) {
+            const arabicNumbers =['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+            return String(num).split('').map(c => arabicNumbers[c]).join('');
+        }
+
+        // Fetch the list of Surahs when the page loads
+        fetch('https://api.alquran.cloud/v1/surah')
+            .then(response => response.json())
+            .then(data => {
+                const select = document.getElementById('surah-select');
+                data.data.forEach(surah => {
+                    const option = document.createElement('option');
+                    option.value = surah.number;
+                    option.textContent = toArabicNumbers(surah.number) + " - " + surah.name;
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error loading surahs:', error));
+
+        // Fetch and display Surah when selected
+        document.getElementById('surah-select').addEventListener('change', function() {
+            const surahNumber = this.value;
+            if (!surahNumber) return;
+
+            const container = document.getElementById('quran-container');
+            container.innerHTML = '<div class="loading">جاري تحميل السورة... ⏳</div>';
+
+            // Fetch Uthmani script
+            fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}/quran-uthmani`)
+                .then(response => response.json())
+                .then(data => {
+                    const surahName = data.data.name;
+                    let html = `<div class="surah-title">${surahName}</div>`;
+                    
+                    // Add Bismillah for all Surahs except Fatihah (1) and Tawbah (9)
+                    if (surahNumber != 1 && surahNumber != 9) {
+                        html += `<div class="bismillah">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>`;
+                    }
+
+                    html += '<div class="quran-text">';
+                    
+                    data.data.ayahs.forEach(ayah => {
+                        let text = ayah.text;
+                        // Prevent duplicate Bismillah in Ayah 1 
+                        if (surahNumber != 1 && ayah.numberInSurah == 1) {
+                            text = text.replace('بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ ', '');
+                        }
+                        html += `${text} <span class="ayah-number">﴿${toArabicNumbers(ayah.numberInSurah)}﴾</span> `;
+                    });
+                    
+                    html += '</div>';
+                    container.innerHTML = html;
+                })
+                .catch(error => {
+                    container.innerHTML = '<div class="loading" style="color: red;">حدث خطأ أثناء التحميل. تأكد من اتصالك بالإنترنت.</div>';
+                });
+        });
+    </script>
+</body>
+</html>

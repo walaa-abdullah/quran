@@ -61,6 +61,29 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             min-height: 400px;
         }
+        
+        /* ---- STYLES FOR SADAQAH MESSAGE ---- */
+        .sadaqah-box {
+            text-align: center;
+            padding: 30px 20px;
+            margin-bottom: 30px;
+            background-color: #f1f6f9;
+            border: 2px dashed var(--primary);
+            border-radius: 12px;
+        }
+        .sadaqah-title {
+            font-family: 'Amiri Quran', serif;
+            font-size: 32px;
+            color: var(--primary);
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .sadaqah-dua {
+            font-size: 18px;
+            color: #636e72;
+        }
+        /* ------------------------------------ */
+
         .surah-title {
             text-align: center;
             font-family: 'Amiri Quran', serif;
@@ -91,7 +114,7 @@
             text-align: center;
             color: #636e72;
             font-size: 22px;
-            margin-top: 50px;
+            margin-top: 20px;
         }
         /* Mobile Screen Adjustments */
         @media (max-width: 600px) {
@@ -107,6 +130,9 @@
             }
             .bismillah {
                 font-size: 24px;
+            }
+            .sadaqah-title {
+                font-size: 26px;
             }
         }
     </style>
@@ -125,6 +151,11 @@
         </div>
 
         <div id="quran-container">
+            <!-- SADAQAH MESSAGE HERE -->
+            <div class="sadaqah-box">
+                <div class="sadaqah-title">صدقة جارية لأمي ولاء عبد الله</div>
+                <div class="sadaqah-dua">نسألكم الدعاء لها بالرحمة والمغفرة</div>
+            </div>
             <div class="loading">الرجاء اختيار السورة من القائمة أعلاه ☝️</div>
         </div>
     </div>
@@ -153,7 +184,18 @@
         // Fetch and display Surah when selected
         document.getElementById('surah-select').addEventListener('change', function() {
             const surahNumber = this.value;
-            if (!surahNumber) return;
+            
+            // If they click back to the empty option, show the Sadaqah message again
+            if (!surahNumber) {
+                document.getElementById('quran-container').innerHTML = `
+                    <div class="sadaqah-box">
+                        <div class="sadaqah-title">صدقة جارية لأمي ولاء عبد الله</div>
+                        <div class="sadaqah-dua">نسألكم الدعاء لها بالرحمة والمغفرة</div>
+                    </div>
+                    <div class="loading">الرجاء اختيار السورة من القائمة أعلاه ☝️</div>
+                `;
+                return;
+            }
 
             const container = document.getElementById('quran-container');
             container.innerHTML = '<div class="loading">جاري تحميل السورة... ⏳</div>';

@@ -7,59 +7,116 @@
     <!-- Beautiful Arabic Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* Light Mode Variables (Default) */
         :root {
-            --primary: #1e3a5f; /* Dark Blue/Navy */
-            --bg: #f8f9fa; /* Eye-friendly background */
-            --paper: #ffffff; /* Paper color */
-            --text: #2d3436; /* Text color */
-            --accent: #d35400; /* Ayah numbers color */
+            --bg: #f8f9fa;
+            --paper: #ffffff;
+            --text: #2d3436;
+            --accent: #d35400;
+            --header-bg: #1e3a5f;
+            --header-text: #ffffff;
+            --primary-text: #1e3a5f;
+            --border-color: #1e3a5f;
+            --sadaqah-bg: #f1f6f9;
+            --sadaqah-dua: #636e72;
         }
+
+        /* Dark Mode Variables */
+        [data-theme="dark"] {
+            --bg: #121212;
+            --paper: #1e1e1e;
+            --text: #e8eaed;
+            --accent: #ffb142; /* Lighter orange for dark screens */
+            --header-bg: #2d2d2d;
+            --header-text: #ffffff;
+            --primary-text: #90caf9; /* Lighter blue for dark screens */
+            --border-color: #555555;
+            --sadaqah-bg: #2a2a2a;
+            --sadaqah-dua: #aaaaaa;
+        }
+
         body {
             background-color: var(--bg);
             color: var(--text);
             font-family: 'Cairo', sans-serif;
             margin: 0;
             padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
+        
         header {
-            background-color: var(--primary);
-            color: white;
-            text-align: center;
-            padding: 20px 10px;
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease;
+        }
+        
+        .header-spacer {
+            width: 40px; /* Balances the layout so title stays centered */
+        }
+
+        .header-title {
             font-size: 30px;
             font-weight: 700;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            flex-grow: 1;
+            text-align: center;
+            margin: 0;
         }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--header-text);
+            padding: 5px;
+            width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .container {
             max-width: 900px;
             margin: 30px auto;
             padding: 0 20px;
         }
+        
         .controls {
             margin-bottom: 30px;
             text-align: center;
         }
+        
         select {
             width: 100%;
             max-width: 400px;
             padding: 12px;
             font-size: 18px;
             font-family: 'Cairo', sans-serif;
-            border: 2px solid var(--primary);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
-            background-color: white;
+            background-color: var(--paper);
+            color: var(--text);
             cursor: pointer;
             outline: none;
+            transition: all 0.3s ease;
         }
+        
         select:focus {
-            box-shadow: 0 0 8px rgba(30, 58, 95, 0.5);
+            box-shadow: 0 0 8px rgba(144, 202, 249, 0.5);
         }
+        
         #quran-container {
             background: var(--paper);
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             min-height: 400px;
+            transition: background-color 0.3s ease;
         }
         
         /* ---- STYLES FOR SADAQAH MESSAGE ---- */
@@ -67,20 +124,25 @@
             text-align: center;
             padding: 30px 20px;
             margin-bottom: 30px;
-            background-color: #f1f6f9;
-            border: 2px dashed var(--primary);
+            background-color: var(--sadaqah-bg);
+            border: 2px dashed var(--border-color);
             border-radius: 12px;
+            transition: all 0.3s ease;
         }
+        
         .sadaqah-title {
             font-family: 'Amiri Quran', serif;
             font-size: 32px;
-            color: var(--primary);
+            color: var(--primary-text);
             margin-bottom: 10px;
             line-height: 1.5;
+            transition: color 0.3s ease;
         }
+        
         .sadaqah-dua {
             font-size: 18px;
-            color: #636e72;
+            color: var(--sadaqah-dua);
+            transition: color 0.3s ease;
         }
         /* ------------------------------------ */
 
@@ -88,9 +150,11 @@
             text-align: center;
             font-family: 'Amiri Quran', serif;
             font-size: 40px;
-            color: var(--primary);
+            color: var(--primary-text);
             margin-bottom: 20px;
+            transition: color 0.3s ease;
         }
+        
         .bismillah {
             text-align: center;
             font-family: 'Amiri Quran', serif;
@@ -98,6 +162,7 @@
             color: var(--text);
             margin-bottom: 30px;
         }
+        
         .quran-text {
             font-family: 'Amiri Quran', serif;
             font-size: 34px;
@@ -105,17 +170,21 @@
             text-align: justify;
             text-align-last: center;
         }
+        
         .ayah-number {
             color: var(--accent);
             font-size: 26px;
             margin: 0 8px;
+            transition: color 0.3s ease;
         }
+        
         .loading {
             text-align: center;
-            color: #636e72;
+            color: var(--sadaqah-dua);
             font-size: 22px;
             margin-top: 20px;
         }
+        
         /* Mobile Screen Adjustments */
         @media (max-width: 600px) {
             .quran-text {
@@ -134,13 +203,18 @@
             .sadaqah-title {
                 font-size: 26px;
             }
+            .header-title {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
 <body>
 
     <header>
-        القرآن الكريم
+        <div class="header-spacer"></div>
+        <h1 class="header-title">القرآن الكريم</h1>
+        <button id="theme-toggle" class="theme-toggle" aria-label="تبديل الوضع">🌙</button>
     </header>
 
     <div class="container">
@@ -153,7 +227,7 @@
         <div id="quran-container">
             <!-- SADAQAH MESSAGE HERE -->
             <div class="sadaqah-box">
-                <div class="sadaqah-title">صدقة جارية لأمي ولاء عبد الله</div>
+                <div class="sadaqah-title">صدقة جارية لأمي ولاء عبدالله</div>
                 <div class="sadaqah-dua">نسألكم الدعاء لها بالصحة والعافية وقبول الأعمال</div>
             </div>
             <div class="loading">الرجاء اختيار السورة من القائمة أعلاه ☝️</div>
@@ -161,6 +235,30 @@
     </div>
 
     <script>
+        // --- Dark Mode Logic ---
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        // Check if the user previously chose dark mode
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            let theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.textContent = '🌙';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.textContent = '☀️';
+            }
+        });
+        // -----------------------
+
         // Convert numbers to Arabic numerals
         function toArabicNumbers(num) {
             const arabicNumbers =['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
@@ -189,7 +287,7 @@
             if (!surahNumber) {
                 document.getElementById('quran-container').innerHTML = `
                     <div class="sadaqah-box">
-                        <div class="sadaqah-title">صدقة جارية لأمي ولاء عبد الله</div>
+                        <div class="sadaqah-title">صدقة جارية لأمي ولاء عبدالله</div>
                         <div class="sadaqah-dua">نسألكم الدعاء لها بالصحة والعافية وقبول الأعمال</div>
                     </div>
                     <div class="loading">الرجاء اختيار السورة من القائمة أعلاه ☝️</div>
